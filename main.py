@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="Cozy Bear Cafe 3D",
+    page_title="Rilakkuma Dessert Cafe 3D",
     page_icon="🐻",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -10,222 +10,225 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-header, footer, #MainMenu {
-    visibility: hidden;
-}
-.block-container {
-    padding: 0;
-    max-width: 100%;
-}
-iframe {
-    display: block;
-}
-.stApp {
-    background: #f7e9db;
-}
+    header, footer, #MainMenu {
+        visibility: hidden;
+    }
+    .block-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+    .stApp {
+        background: #f8eadc;
+    }
+    iframe {
+        display: block;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-html = r'''
+html = r"""
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
     overflow: hidden;
-    font-family: system-ui, 'Apple SD Gothic Neo', sans-serif;
-    color: #684b3b;
-    background: #f7e9db;
+    font-family: "Apple SD Gothic Neo", Arial, sans-serif;
+    background: #f8eadc;
+    color: #654735;
 }
 
-canvas {
+button, select {
+    cursor: pointer;
+    border: 1px solid #e9cdb4;
+    border-radius: 12px;
+    background: #fff9ee;
+    color: #654735;
+    padding: 9px 12px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #ffe4d6;
+}
+
+button:active {
+    transform: scale(.97);
+}
+
+#game {
+    position: fixed;
+    inset: 0;
+}
+
+#game canvas {
     display: block;
+    outline: none;
 }
 
 #ui {
-    position: absolute;
+    position: fixed;
     inset: 0;
     pointer-events: none;
 }
 
-button, select {
+#ui button,
+#ui select,
+.panel {
     pointer-events: auto;
-    cursor: pointer;
-    border: 0;
-    border-radius: 15px;
-    padding: 10px 13px;
-    background: #fff7ed;
-    color: #6d4b3c;
-    box-shadow: 0 3px 12px #6d4b3c24;
-    font-weight: 700;
-}
-
-button:hover {
-    background: #ffe3dd;
 }
 
 .panel {
-    background: #fff9f0ed;
-    border: 2px solid #edcfb8;
+    background: rgba(255, 250, 242, .95);
+    border: 2px solid #e9d0b7;
     border-radius: 18px;
-    padding: 12px;
-    box-shadow: 0 5px 20px #684b3b20;
-    pointer-events: auto;
+    padding: 13px;
+    box-shadow: 0 5px 22px #6c493522;
 }
 
-.top {
+#top {
     position: absolute;
-    top: 14px;
-    left: 14px;
+    top: 15px;
+    left: 15px;
     display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
 }
 
-.right {
-    position: absolute;
-    right: 14px;
-    top: 14px;
-    width: 245px;
+#title {
+    font-size: 17px;
+    font-weight: 900;
 }
 
-.bottom {
-    position: absolute;
-    bottom: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.help {
-    position: absolute;
-    bottom: 14px;
-    left: 14px;
-    font-size: 12px;
-    background: #fff9f0dc;
-    padding: 9px;
-    border-radius: 12px;
-    max-width: 260px;
+.subtitle {
+    font-size: 11px;
+    margin-top: 4px;
+    color: #a18572;
 }
 
 .badge {
-    background: #fce5bb;
-    border-radius: 10px;
-    padding: 8px 10px;
-    font-weight: 800;
+    background: #fff5d8;
+    border: 2px solid #eed7a5;
+    border-radius: 15px;
+    padding: 11px;
+    font-weight: 900;
 }
 
-.small {
-    font-size: 12px;
-    color: #927b6e;
-    margin: 6px 0;
-}
-
-.hidden {
-    display: none !important;
-}
-
-#notice {
+#shop {
     position: absolute;
-    top: 90px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    background: #fff9f0ee;
-    border-radius: 20px;
-    font-weight: 700;
-    opacity: 0;
-    transition: opacity .2s;
-    max-width: 80%;
-    text-align: center;
+    top: 15px;
+    right: 15px;
+    width: 260px;
+    max-height: 77vh;
+    overflow-y: auto;
 }
 
-.menu {
+.section {
+    margin: 12px 0 8px;
+    font-weight: 900;
+    color: #a66e58;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin: 9px 0;
+    font-size: 13px;
+}
+
+.row select {
+    max-width: 145px;
+}
+
+.grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 7px;
 }
 
-.menu button {
+.grid button {
     font-size: 12px;
-    padding: 10px 5px;
+    padding: 11px 4px;
 }
 
-.row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    justify-content: space-between;
-    margin: 8px 0;
-}
-
-#crosshair {
+#bottom {
     position: absolute;
-    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 25px;
-    color: #876b55;
-    opacity: .65;
-    pointer-events: none;
+    bottom: 18px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+#hint {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    background: #fff9edeb;
+    border-radius: 12px;
+    padding: 11px;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+#message {
+    position: absolute;
+    top: 95px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fffaf1;
+    border: 2px solid #f0d5b9;
+    border-radius: 20px;
+    padding: 12px 20px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity .25s;
+    text-align: center;
+    max-width: 75%;
 }
 
 #loading {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    display: grid;
-    place-items: center;
-    background: #f7e9db;
-    z-index: 10;
-    font-size: 20px;
-    font-weight: 800;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8eadc;
+    font-size: 23px;
+    font-weight: 900;
 }
 
-#mobile {
-    display: none;
+#focus {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    opacity: .4;
 }
 
 @media(max-width:700px) {
-    .right {
-        top: 105px;
+    #shop {
         width: 190px;
+        top: 110px;
     }
-
-    .top {
-        right: 10px;
-    }
-
-    .help {
+    #hint {
         display: none;
     }
-
-    .bottom {
-        bottom: 10px;
-    }
-
-    #mobile {
-        display: block;
-        position: absolute;
-        bottom: 80px;
-        left: 12px;
-        pointer-events: auto;
-    }
-
-    #mobile button {
-        margin: 2px;
+    #top {
+        flex-wrap: wrap;
+        right: 10px;
     }
 }
 </style>
@@ -233,33 +236,28 @@ button:hover {
 
 <body>
 
-<div id="loading">
-    🐻 카페를 준비하고 있어요...
-</div>
+<div id="game"></div>
+
+<div id="loading">🐻 카페를 준비하고 있어요...</div>
 
 <div id="ui">
 
-    <div class="top">
+    <div id="top">
         <div class="panel">
-            <b>🐻 Cozy Bear Cafe</b>
-            <div class="small">작은 디저트 카페 타이쿤</div>
+            <div id="title">🐻 Rilakkuma Cafe</div>
+            <div class="subtitle">Cozy Dessert Tycoon</div>
         </div>
 
-        <span class="badge" id="coins">🪙 0</span>
-        <span class="badge" id="level">⭐ Lv.1</span>
+        <div class="badge" id="coins">🪙 150</div>
+        <div class="badge" id="level">⭐ Lv.1</div>
     </div>
 
-    <div class="right panel">
+    <div id="shop" class="panel">
 
-        <b>🍰 카페 관리</b>
-
-        <div class="small" id="status">
-            손님을 기다리는 중...
-        </div>
+        <div class="section">🧸 캐릭터</div>
 
         <div class="row">
-            <span>내 캐릭터</span>
-
+            <span>캐릭터 선택</span>
             <select id="character">
                 <option value="white">코리락쿠마</option>
                 <option value="brown">리락쿠마</option>
@@ -269,82 +267,82 @@ button:hover {
         </div>
 
         <div class="row">
-            <span>시점</span>
-            <button id="camera">3인칭 → 1인칭</button>
+            <span>시점 변경</span>
+            <button id="view">3인칭</button>
         </div>
 
+        <div class="section">🍰 카페 운영</div>
+
         <div class="row">
-            <span>손님 주문</span>
+            <span>대기 주문</span>
             <b id="orders">0</b>
         </div>
 
-        <hr style="border:0;border-top:1px solid #e8d1bd">
-
-        <b>🛒 가구 상점</b>
-
-        <div class="small">
-            가구 구매 후 카페에 자동 설치
+        <div class="row">
+            <span>판매한 디저트</span>
+            <b id="served">0</b>
         </div>
 
-        <div class="menu">
-            <button data-buy="table">🪑 테이블 80</button>
-            <button data-buy="plant">🌿 화분 45</button>
-            <button data-buy="lamp">💡 조명 65</button>
-            <button data-buy="sofa">🛋️ 소파 120</button>
+        <div class="section">🛍️ 인테리어 상점</div>
+
+        <div class="grid">
+            <button data-buy="table">🪑 테이블<br>80🪙</button>
+            <button data-buy="plant">🌷 화분<br>45🪙</button>
+            <button data-buy="lamp">💡 조명<br>65🪙</button>
+            <button data-buy="sofa">🛋️ 소파<br>120🪙</button>
         </div>
 
-        <div class="small" id="owned">
-            구매한 가구: 0개
+        <div class="row">
+            <span>구매한 가구</span>
+            <b id="furniture">0</b>
         </div>
 
-        <button id="save" style="width:100%">
-            💾 저장하기
+        <button id="save" style="width:100%;margin-top:8px;">
+            💾 게임 저장
         </button>
 
     </div>
 
-    <div id="notice"></div>
-    <div id="crosshair">+</div>
+    <div id="message"></div>
 
-    <div class="bottom">
-        <button id="serve">🍮 주문 서빙 (+35)</button>
-        <button id="wave">👋 인사</button>
+    <div id="focus">+</div>
+
+    <div id="bottom">
+        <button id="serve">🍮 디저트 서빙</button>
+        <button id="wave">👋 손 흔들기</button>
         <button id="dance">🎵 춤추기</button>
-        <button id="reset">↻ 새 게임</button>
+        <button id="reset">🔄 초기화</button>
     </div>
 
-    <div class="help">
-        WASD 이동 · Shift 달리기 · 마우스 드래그 시점 회전
-        <br>
-        V 시점 전환 · E 주문 서빙
-        <br>
-        손님에게 다가가 E를 누르면 서빙할 수 있어요.
-    </div>
-
-    <div id="mobile">
-        <button data-dir="w">▲</button><br>
-        <button data-dir="a">◀</button>
-        <button data-dir="s">▼</button>
-        <button data-dir="d">▶</button>
+    <div id="hint">
+        🎮 WASD 이동 / Shift 달리기<br>
+        🖱️ 마우스 드래그로 시점 회전<br>
+        V 시점 변경 / E 디저트 서빙<br>
+        게임 화면을 클릭한 뒤 이동하세요.
     </div>
 
 </div>
 
 <script type="module">
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js";
 
 const $ = id => document.getElementById(id);
 
+// ============================================
+// 기본 3D 환경
+// ============================================
+
 const scene = new THREE.Scene();
 
-scene.background = new THREE.Color(0xf7e9d8);
-scene.fog = new THREE.Fog(0xf7e9d8, 19, 42);
+scene.background = new THREE.Color(0xf8e8d7);
+scene.fog = new THREE.Fog(0xf8e8d7, 25, 55);
 
 const camera = new THREE.PerspectiveCamera(
-    65,
-    innerWidth / innerHeight,
-    0.08,
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
     100
 );
 
@@ -353,1070 +351,824 @@ const renderer = new THREE.WebGLRenderer({
     powerPreference: "high-performance"
 });
 
-// 키보드 입력을 받을 수 있도록 설정
-renderer.domElement.tabIndex = 0;
-renderer.domElement.style.outline = "none";
-renderer.domElement.style.touchAction = "none";
-
-// 3D 화면 클릭 시 키보드 포커스
-renderer.domElement.addEventListener("pointerdown", () => {
-    renderer.domElement.focus();
-});
-
-// 페이지에 포커스가 들어오면 게임 화면 활성화
-window.addEventListener("focus", () => {
-    renderer.domElement.focus();
-});
-
-setTimeout(() => {
-    renderer.domElement.focus();
-}, 700);
-
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-document.body.prepend(renderer.domElement);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.45;
 
+$("game").appendChild(renderer.domElement);
 
-// ================================================
+renderer.domElement.tabIndex = 0;
+renderer.domElement.style.outline = "none";
+renderer.domElement.style.touchAction = "none";
+
+renderer.domElement.addEventListener("pointerdown", () => {
+    renderer.domElement.focus();
+});
+
+// ============================================
 // 조명
-// ================================================
+// ============================================
 
 scene.add(
     new THREE.HemisphereLight(
         0xffffff,
-        0xb8a38b,
-        2.2
+        0xc8a990,
+        2.3
     )
 );
 
-const sun = new THREE.DirectionalLight(
-    0xffffff,
-    2.2
+const sunlight = new THREE.DirectionalLight(
+    0xfff5e5,
+    2.8
 );
 
-sun.position.set(-5, 12, 8);
-sun.castShadow = true;
-sun.shadow.mapSize.set(1024, 1024);
+sunlight.position.set(-6, 13, 7);
+sunlight.castShadow = true;
+sunlight.shadow.mapSize.set(2048, 2048);
 
-sun.shadow.camera.left = -15;
-sun.shadow.camera.right = 15;
-sun.shadow.camera.top = 15;
-sun.shadow.camera.bottom = -15;
+sunlight.shadow.camera.left = -15;
+sunlight.shadow.camera.right = 15;
+sunlight.shadow.camera.top = 15;
+sunlight.shadow.camera.bottom = -15;
 
-scene.add(sun);
+sunlight.shadow.bias = -0.0003;
 
+scene.add(sunlight);
 
-// ================================================
+// ============================================
 // 재질
-// ================================================
+// ============================================
 
-const mat = (c, roughness = 0.86) =>
-    new THREE.MeshStandardMaterial({
-        color: c,
-        roughness
+function material(color, roughness = .8) {
+    return new THREE.MeshStandardMaterial({
+        color,
+        roughness,
+        metalness: 0
     });
+}
 
-const M = {
-    floor: mat(0xe8c8a5),
-    wall: mat(0xfff1dd),
-    wood: mat(0xb88765),
-    dark: mat(0x6d4a37),
-    pink: mat(0xf2b6b6),
-    cream: mat(0xfff3dc),
-    green: mat(0x91a987),
-    glass: mat(0xd2f4f1, 0.18)
+const materials = {
+    floor: material(0xe5c49f),
+    wall: material(0xffefdc),
+    wood: material(0xb78660),
+    darkWood: material(0x80563e),
+    cream: material(0xfff5e5),
+    pink: material(0xf0b7b7),
+    green: material(0x91ab83),
+    yellow: material(0xffe5a4),
+    glass: new THREE.MeshPhysicalMaterial({
+        color: 0xe8ffff,
+        transparent: true,
+        opacity: .48,
+        roughness: .1,
+        metalness: 0,
+        depthWrite: false
+    })
 };
 
+// ============================================
+// 기본 도형 생성
+// ============================================
 
-// ================================================
-// 기본 3D 도형
-// ================================================
+function cube(parent, w, h, d, x, y, z, mat) {
 
-function box(parent, w, h, d, x, y, z, m) {
-
-    const a = new THREE.Mesh(
+    const mesh = new THREE.Mesh(
         new THREE.BoxGeometry(w, h, d),
-        m
+        mat
     );
 
-    a.position.set(x, y, z);
-    a.castShadow = true;
-    a.receiveShadow = true;
+    mesh.position.set(x, y, z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
 
-    parent.add(a);
+    parent.add(mesh);
 
-    return a;
+    return mesh;
 }
 
-function sphere(
-    parent, r, x, y, z, m,
-    sx = 1, sy = 1, sz = 1
-) {
+function ball(parent, x, y, z, sx, sy, sz, mat) {
 
-    const a = new THREE.Mesh(
-        new THREE.SphereGeometry(r, 18, 14),
-        m
+    const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 40, 28),
+        mat
     );
 
-    a.position.set(x, y, z);
-    a.scale.set(sx, sy, sz);
-    a.castShadow = true;
+    mesh.position.set(x, y, z);
+    mesh.scale.set(sx, sy, sz);
 
-    parent.add(a);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
 
-    return a;
+    parent.add(mesh);
+
+    return mesh;
 }
 
-function cylinder(parent, r1, r2, h, x, y, z, m) {
+function cylinder(parent, top, bottom, height, x, y, z, mat) {
 
-    const a = new THREE.Mesh(
-        new THREE.CylinderGeometry(r1, r2, h, 16),
-        m
+    const mesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(
+            top, bottom, height, 32
+        ),
+        mat
     );
 
-    a.position.set(x, y, z);
-    a.castShadow = true;
+    mesh.position.set(x, y, z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
 
-    parent.add(a);
+    parent.add(mesh);
 
-    return a;
+    return mesh;
 }
 
+// ============================================
+// 카페 건물
+// ============================================
 
-// ================================================
-// 카페 내부
-// ================================================
+cube(scene, 18, .3, 18, 0, -.15, 0, materials.floor);
 
-box(scene, 18, .3, 18, 0, -.15, 0, M.floor);
+cube(scene, 18, 4.5, .25, 0, 2.25, -9, materials.wall);
+cube(scene, .25, 4.5, 18, -9, 2.25, 0, materials.wall);
+cube(scene, .25, 4.5, 18, 9, 2.25, 0, materials.wall);
 
-box(scene, 18, 4, .24, 0, 2, -9, M.wall);
-box(scene, .24, 4, 18, -9, 2, 0, M.wall);
-box(scene, .24, 4, 18, 9, 2, 0, M.wall);
-
-box(scene, 18, .5, .3, 0, 3.8, -8.85, M.pink);
-box(scene, 18, .2, .2, 0, .2, -8.85, M.wood);
+// 벽 장식
+cube(scene, 18, .25, .3, 0, 4.1, -8.85, materials.pink);
+cube(scene, 18, .2, .3, 0, .3, -8.85, materials.wood);
 
 // 카운터
-box(scene, 5, 1.1, 1.5, 0, .55, -6.8, M.wood);
-box(scene, 5, .13, 1.65, 0, 1.14, -6.8, M.cream);
+cube(scene, 5.5, 1.1, 1.6, 0, .55, -6.8, materials.wood);
+cube(scene, 5.7, .15, 1.8, 0, 1.15, -6.8, materials.cream);
 
-// 장식
-box(scene, 2, 1.4, .3, 0, 2.6, -8.7, M.pink);
+// 디저트 진열장
+cube(scene, 2.0, .75, .9, -1.4, 1.62, -6.8, materials.glass);
 
-// 디저트 진열대
-box(scene, 1.2, .5, .8, -1.3, 1.5, -6.7, M.glass);
+// 진열장 안 디저트
+const dessertPink = material(0xf3a6af);
+const dessertCream = material(0xffefca);
+const dessertBrown = material(0x9a654b);
+
+for (let i = 0; i < 4; i++) {
+
+    const x = -2.05 + i * .43;
+
+    cylinder(
+        scene, .17, .19, .18,
+        x, 1.36, -6.4,
+        i % 2 ? dessertPink : dessertCream
+    );
+
+    ball(
+        scene,
+        x, 1.51, -6.4,
+        .12, .09, .12,
+        i % 2 ? dessertCream : dessertBrown
+    );
+}
 
 // 커피 머신
-box(scene, .7, .7, .7, 1.4, 1.55, -6.7, M.dark);
-box(scene, .5, .12, .4, 1.4, 1.95, -6.7, M.cream);
+cube(scene, .8, .8, .7, 1.5, 1.62, -6.8, materials.darkWood);
+cube(scene, .65, .15, .45, 1.5, 2.08, -6.8, materials.cream);
 
-
-// ================================================
-// 테이블
-// ================================================
+// ============================================
+// 가구
+// ============================================
 
 function makeTable(x, z) {
 
     const g = new THREE.Group();
     g.position.set(x, 0, z);
 
-    cylinder(g, .77, .77, .12, 0, .93, 0, M.cream);
-    cylinder(g, .12, .15, .9, 0, .45, 0, M.wood);
-    cylinder(g, .48, .48, .09, 0, .07, 0, M.wood);
+    cylinder(g, .78, .78, .13, 0, .93, 0, materials.cream);
+    cylinder(g, .13, .17, .85, 0, .47, 0, materials.wood);
+    cylinder(g, .45, .45, .08, 0, .07, 0, materials.darkWood);
 
-    for (let a = 0; a < 2; a++) {
+    for (const side of [-1, 1]) {
 
-        const side = a ? 1 : -1;
+        cube(
+            g, .75, .13, .7,
+            side * 1.2, .5, 0,
+            materials.pink
+        );
 
-        box(g, .8, .12, .7, side * 1.24, .48, 0, M.pink);
-        box(g, .8, .8, .12, side * 1.24, .85, side * .37, M.pink);
+        cube(
+            g, .75, .7, .13,
+            side * 1.2, .9, -.3,
+            materials.pink
+        );
     }
 
     scene.add(g);
-
     return g;
 }
-
-makeTable(-4, -2);
-makeTable(3, -2);
-
-
-// ================================================
-// 화분
-// ================================================
 
 function makePlant(x, z) {
 
     const g = new THREE.Group();
     g.position.set(x, 0, z);
 
-    cylinder(
-        g, .34, .25, .6,
-        0, .3, 0,
-        mat(0xf5c1a6)
-    );
+    cylinder(g, .34, .24, .6, 0, .3, 0, materials.pink);
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 7; i++) {
 
-        const a = i * Math.PI / 3;
+        const a = i * Math.PI * 2 / 7;
 
-        sphere(
+        ball(
             g,
-            .3,
-            Math.cos(a) * .23,
-            .85 + Math.sin(i * 2) * .12,
-            Math.sin(a) * .23,
-            M.green,
-            .8, 1.4, .8
+            Math.cos(a) * .24,
+            .86 + Math.sin(i * 2) * .1,
+            Math.sin(a) * .24,
+            .24, .38, .22,
+            materials.green
         );
     }
 
     scene.add(g);
+    return g;
 }
-
-makePlant(-7, -7);
-makePlant(7, -7);
-
-
-// ================================================
-// 조명 가구
-// ================================================
 
 function makeLamp(x, z) {
 
     const g = new THREE.Group();
     g.position.set(x, 0, z);
 
-    cylinder(g, .15, .3, 2.5, 0, 1.25, 0, M.wood);
+    cylinder(g, .12, .22, 2.4, 0, 1.2, 0, materials.wood);
 
-    sphere(
-        g, .5, 0, 2.55, 0,
-        mat(0xffe8a3),
-        1, .6, 1
+    ball(
+        g, 0, 2.45, 0,
+        .48, .32, .48,
+        materials.yellow
     );
 
     scene.add(g);
+    return g;
 }
-
-makeLamp(6, 5);
-
-
-// ================================================
-// 소파
-// ================================================
 
 function makeSofa(x, z) {
 
     const g = new THREE.Group();
     g.position.set(x, 0, z);
 
-    box(g, 2, .5, .85, 0, .45, 0, M.pink);
-    box(g, 2, .9, .25, 0, .9, -.4, M.pink);
+    cube(g, 2, .5, .9, 0, .4, 0, materials.pink);
+    cube(g, 2, .85, .25, 0, .85, -.4, materials.pink);
 
-    box(g, .23, .65, .9, -1, .65, 0, M.cream);
-    box(g, .23, .65, .9, 1, .65, 0, M.cream);
+    cube(g, .25, .65, .9, -1, .65, 0, materials.cream);
+    cube(g, .25, .65, .9, 1, .65, 0, materials.cream);
 
     scene.add(g);
+    return g;
 }
 
+makeTable(-4, -2);
+makeTable(3, -2);
+makePlant(-7, -7);
+makePlant(7, -7);
+makeLamp(6, 5);
 makeSofa(-5, 5);
 
+// ============================================
+// 캐릭터 제작
+// ============================================
 
-// ================================================
-// 캐릭터 색상
-// ================================================
+function createCharacter(kind = "white") {
 
-const palettes = {
+    const root = new THREE.Group();
+    const model = new THREE.Group();
 
-    white: {
-        body: 0xfff7e9,
-        ear: 0xf8bfc6
-    },
+    root.add(model);
 
-    brown: {
-        body: 0xb9804b,
-        ear: 0xe3b775
-    },
-
-    bird: {
-        body: 0xffd952,
-        ear: 0xffb846
-    },
-
-    little: {
-        body: 0xc99767,
-        ear: 0xe7ba8b
-    }
-};
-
-
-// ================================================
-// 고퀄리티 3D 캐릭터 생성
-// ================================================
-
-function bear(kind = "white") {
-
-    const group = new THREE.Group();
-
-    const colorSets = {
-
+    const palettes = {
         white: {
-            fur: 0xfff8ee,
-            ear: 0xf3b2bd,
+            fur: 0xfff8ed,
+            ear: 0xf4a9bc,
             muzzle: 0xffffff,
-            belly: 0xffffff,
-            nose: 0x503b32
+            belly: 0xffffff
         },
-
         brown: {
-            fur: 0xb77e4c,
-            ear: 0xe9c47d,
-            muzzle: 0xfff4dd,
-            belly: 0xffeed1,
-            nose: 0x503b32
+            fur: 0xb77b43,
+            ear: 0xe8bf70,
+            muzzle: 0xfff5e2,
+            belly: 0xfff0d5
         },
-
         little: {
-            fur: 0xc79664,
-            ear: 0xe7bd89,
-            muzzle: 0xffeedb,
-            belly: 0xffead1,
-            nose: 0x503b32
+            fur: 0xc99762,
+            ear: 0xe8bd88,
+            muzzle: 0xfff1df,
+            belly: 0xffead2
         },
-
         bird: {
-            fur: 0xffd84c,
-            ear: 0xffb84d,
-            muzzle: 0xffb84d,
-            belly: 0xffe47d,
-            nose: 0x503b32
+            fur: 0xffd74e,
+            ear: 0xffa63e,
+            muzzle: 0xffa63e,
+            belly: 0xffe77e
         }
-
     };
 
-    const colors = colorSets[kind] || colorSets.white;
+    const p = palettes[kind] || palettes.white;
 
-    function material(hex, roughness = 0.78) {
+    const fur = material(p.fur, .9);
+    const ear = material(p.ear, .85);
+    const muzzle = material(p.muzzle, .85);
+    const belly = material(p.belly, .85);
 
-        return new THREE.MeshStandardMaterial({
-            color: hex,
-            roughness: roughness,
-            metalness: 0
-        });
+    const eye = material(0x241b19, .42);
+    const nose = material(0x382820, .65);
+    const blush = material(0xf2b0b8, .9);
+    const red = material(0xc93836, .45);
+    const white = material(0xffffff);
+
+    const parts = {};
+
+    function oval(parent, x, y, z, sx, sy, sz, mat) {
+        return ball(parent, x, y, z, sx, sy, sz, mat);
     }
 
-    const fur = material(colors.fur);
-    const ear = material(colors.ear);
-    const muzzle = material(colors.muzzle);
-    const belly = material(colors.belly);
-
-    const eye = material(0x211b19, 0.18);
-    const nose = material(colors.nose, 0.35);
-    const shine = material(0xffffff, 0.1);
-    const blush = material(0xf5b4b7);
-
-    function oval(
-        x, y, z,
-        sx, sy, sz,
-        mat
-    ) {
-
-        const mesh = new THREE.Mesh(
-            new THREE.SphereGeometry(
-                1,
-                48,
-                32
-            ),
-            mat
-        );
-
-        mesh.position.set(x, y, z);
-        mesh.scale.set(sx, sy, sz);
-
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-
-        group.add(mesh);
-
-        return mesh;
-    }
-
-    function curvedLine(points, radius, mat) {
+    function line(parent, points, radius, mat) {
 
         const curve = new THREE.CatmullRomCurve3(
             points.map(p => new THREE.Vector3(...p))
         );
 
         const mesh = new THREE.Mesh(
-            new THREE.TubeGeometry(
-                curve,
-                20,
-                radius,
-                8,
-                false
-            ),
+            new THREE.TubeGeometry(curve, 20, radius, 8, false),
             mat
         );
 
-        group.add(mesh);
-
+        parent.add(mesh);
         return mesh;
     }
 
-    // ============================================
-    // 키이로이토리
-    // ============================================
-
     if (kind === "bird") {
 
-        oval(
-            0, 1.02, 0,
-            .55, .62, .49,
-            fur
-        );
+        oval(model, 0, 1.0, 0, .54, .62, .48, fur);
 
-        // 볼
-        oval(
-            -.35, .97, .29,
-            .23, .23, .17,
-            fur
-        );
+        oval(model, -.21, 1.17, .46, .055, .07, .035, eye);
+        oval(model, .21, 1.17, .46, .055, .07, .035, eye);
 
-        oval(
-            .35, .97, .29,
-            .23, .23, .17,
-            fur
-        );
+        oval(model, 0, .98, .52, .17, .09, .14, ear);
 
-        // 눈
-        oval(
-            -.21, 1.18, .46,
-            .055, .075, .035,
-            eye
-        );
+        parts.leftArm = new THREE.Group();
+        parts.rightArm = new THREE.Group();
 
-        oval(
-            .21, 1.18, .46,
-            .055, .075, .035,
-            eye
-        );
+        parts.leftArm.position.set(-.48, .95, 0);
+        parts.rightArm.position.set(.48, .95, 0);
 
-        // 눈 하이라이트
-        oval(
-            -.23, 1.21, .49,
-            .015, .018, .01,
-            shine
-        );
+        oval(parts.leftArm, -.08, -.07, 0, .18, .27, .22, fur);
+        oval(parts.rightArm, .08, -.07, 0, .18, .27, .22, fur);
 
-        oval(
-            .19, 1.21, .49,
-            .015, .018, .01,
-            shine
-        );
+        model.add(parts.leftArm, parts.rightArm);
 
-        // 부리
-        oval(
-            0, .98, .52,
-            .17, .095, .16,
-            ear
-        );
+        parts.leftLeg = new THREE.Group();
+        parts.rightLeg = new THREE.Group();
 
-        // 날개
-        oval(
-            -.53, .91, 0,
-            .18, .28, .23,
-            fur
-        );
+        parts.leftLeg.position.set(-.23, .4, .1);
+        parts.rightLeg.position.set(.23, .4, .1);
 
-        oval(
-            .53, .91, 0,
-            .18, .28, .23,
-            fur
-        );
+        oval(parts.leftLeg, 0, -.12, .1, .19, .1, .22, ear);
+        oval(parts.rightLeg, 0, -.12, .1, .19, .1, .22, ear);
 
-        // 발
-        oval(
-            -.23, .35, .20,
-            .22, .09, .23,
-            ear
-        );
+        model.add(parts.leftLeg, parts.rightLeg);
 
-        oval(
-            .23, .35, .20,
-            .22, .09, .23,
-            ear
-        );
+        oval(model, 0, 1.61, 0, .09, .16, .09, fur);
 
-        // 머리 위 깃털
-        oval(
-            0, 1.62, 0,
-            .09, .17, .09,
-            fur
-        );
-
-        return group;
+        root.userData = { model, parts };
+        return root;
     }
-
-    // ============================================
-    // 리락쿠마 / 코리락쿠마
-    // ============================================
 
     // 몸통
-    oval(
-        0, .72, 0,
-        .47, .55, .39,
-        fur
-    );
+    oval(model, 0, .74, 0, .46, .54, .38, fur);
 
     // 배
-    oval(
-        0, .71, .34,
-        .33, .39, .12,
-        belly
-    );
+    oval(model, 0, .72, .34, .31, .37, .105, belly);
 
     // 머리
-    oval(
-        0, 1.51, 0,
-        .65, .54, .49,
-        fur
-    );
+    oval(model, 0, 1.51, 0, .65, .53, .48, fur);
 
-    // 볼의 볼륨
-    oval(
-        -.43, 1.34, .15,
-        .24, .22, .27,
-        fur
-    );
-
-    oval(
-        .43, 1.34, .15,
-        .24, .22, .27,
-        fur
-    );
+    // 볼
+    oval(model, -.42, 1.34, .12, .23, .22, .27, fur);
+    oval(model, .42, 1.34, .12, .23, .22, .27, fur);
 
     // 귀
-    oval(
-        -.48, 1.96, 0,
-        .23, .23, .17,
-        fur
-    );
+    oval(model, -.47, 1.96, 0, .22, .22, .16, fur);
+    oval(model, .47, 1.96, 0, .22, .22, .16, fur);
 
-    oval(
-        .48, 1.96, 0,
-        .23, .23, .17,
-        fur
-    );
-
-    // 귀 안쪽
-    oval(
-        -.48, 1.97, .145,
-        .145, .145, .045,
-        ear
-    );
-
-    oval(
-        .48, 1.97, .145,
-        .145, .145, .045,
-        ear
-    );
+    oval(model, -.47, 1.97, .145, .14, .14, .04, ear);
+    oval(model, .47, 1.97, .145, .14, .14, .04, ear);
 
     // 눈
-    oval(
-        -.23, 1.53, .465,
-        .065, .078, .035,
-        eye
-    );
+    oval(model, -.23, 1.52, .455, .064, .075, .035, eye);
+    oval(model, .23, 1.52, .455, .064, .075, .035, eye);
 
-    oval(
-        .23, 1.53, .465,
-        .065, .078, .035,
-        eye
-    );
-
-    // 눈 반짝임
-    oval(
-        -.25, 1.565, .495,
-        .017, .019, .012,
-        shine
-    );
-
-    oval(
-        .21, 1.565, .495,
-        .017, .019, .012,
-        shine
-    );
-
-    // 입 주변 흰색 부분
-    oval(
-        0, 1.29, .47,
-        .25, .17, .15,
-        muzzle
-    );
+    // 주둥이
+    oval(model, 0, 1.29, .46, .25, .17, .15, muzzle);
 
     // 코
-    oval(
-        0, 1.355, .615,
-        .078, .052, .035,
-        nose
-    );
+    oval(model, 0, 1.355, .605, .075, .05, .035, nose);
 
-    // 코에서 입까지 이어지는 선
-    curvedLine(
+    // 입
+    line(
+        model,
         [
-            [0, 1.32, .62],
-            [0, 1.275, .625],
-            [0, 1.245, .615]
+            [0, 1.32, .617],
+            [0, 1.27, .62],
+            [0, 1.245, .614]
         ],
-        .012,
+        .011,
         nose
     );
 
-    // 왼쪽 입
-    curvedLine(
+    line(
+        model,
         [
-            [0, 1.245, .615],
-            [-.045, 1.22, .615],
-            [-.09, 1.245, .59]
+            [-.085, 1.25, .585],
+            [-.045, 1.22, .61],
+            [0, 1.245, .614],
+            [.045, 1.22, .61],
+            [.085, 1.25, .585]
         ],
-        .012,
+        .011,
         nose
     );
 
-    // 오른쪽 입
-    curvedLine(
-        [
-            [0, 1.245, .615],
-            [.045, 1.22, .615],
-            [.09, 1.245, .59]
-        ],
-        .012,
-        nose
-    );
-
-    // 코리락쿠마 볼
+    // 코리락쿠마
     if (kind === "white") {
 
-        oval(
-            -.42, 1.34, .425,
-            .11, .055, .015,
-            blush
-        );
+        oval(model, -.40, 1.34, .43, .10, .05, .014, blush);
+        oval(model, .40, 1.34, .43, .10, .05, .014, blush);
 
-        oval(
-            .42, 1.34, .425,
-            .11, .055, .015,
-            blush
-        );
+        // 빨간 단추
+        oval(model, 0, .87, .41, .105, .105, .045, red);
+
+        for (const x of [-.035, .035]) {
+            for (const y of [-.035, .035]) {
+                oval(
+                    model,
+                    x, .87 + y, .455,
+                    .012, .012, .006,
+                    white
+                );
+            }
+        }
     }
 
-    // 팔
-    const leftArm = oval(
-        -.50, .78, .04,
-        .18, .28, .20,
-        fur
-    );
+    // 움직이는 팔
+    parts.leftArm = new THREE.Group();
+    parts.rightArm = new THREE.Group();
 
-    leftArm.rotation.z = -.18;
+    parts.leftArm.position.set(-.47, .94, 0);
+    parts.rightArm.position.set(.47, .94, 0);
 
-    const rightArm = oval(
-        .50, .78, .04,
-        .18, .28, .20,
-        fur
-    );
-
-    rightArm.rotation.z = .18;
-
-    // 다리
     oval(
-        -.25, .22, .14,
-        .27, .20, .29,
+        parts.leftArm,
+        -.07, -.19, .03,
+        .18, .27, .19,
         fur
     );
 
     oval(
-        .25, .22, .14,
-        .27, .20, .29,
+        parts.rightArm,
+        .07, -.19, .03,
+        .18, .27, .19,
         fur
     );
 
-    // 발바닥
+    model.add(parts.leftArm, parts.rightArm);
+
+    // 움직이는 다리
+    parts.leftLeg = new THREE.Group();
+    parts.rightLeg = new THREE.Group();
+
+    parts.leftLeg.position.set(-.24, .38, .08);
+    parts.rightLeg.position.set(.24, .38, .08);
+
     oval(
-        -.25, .20, .405,
-        .14, .09, .018,
-        ear
+        parts.leftLeg,
+        0, -.15, .08,
+        .26, .20, .28,
+        fur
     );
 
     oval(
-        .25, .20, .405,
-        .14, .09, .018,
-        ear
+        parts.rightLeg,
+        0, -.15, .08,
+        .26, .20, .28,
+        fur
     );
+
+    model.add(parts.leftLeg, parts.rightLeg);
 
     // 꼬리
-    oval(
-        0, .47, -.39,
-        .16, .16, .14,
-        fur
-    );
+    oval(model, 0, .45, -.38, .15, .15, .14, fur);
 
-    return group;
+    root.userData = { model, parts };
+
+    return root;
 }
 
-
-// ================================================
-// 플레이어 캐릭터
-// ================================================
+// ============================================
+// 플레이어
+// ============================================
 
 const player = new THREE.Group();
-
 scene.add(player);
 
-let character =
-    localStorage.getItem('cozy_character') || 'white';
+let selectedCharacter =
+    localStorage.getItem("cafe_character") || "white";
 
-function setCharacter(k) {
+let characterModel = null;
 
-    character = k;
+function changeCharacter(kind) {
 
-    while (player.children.length) {
-        player.remove(player.children[0]);
+    selectedCharacter = kind;
+
+    if (characterModel) {
+        player.remove(characterModel);
     }
 
-    player.add(bear(k));
+    characterModel = createCharacter(kind);
+    characterModel.scale.setScalar(1.1);
 
-    $('character').value = k;
+    player.add(characterModel);
 
-    localStorage.setItem('cozy_character', k);
+    $("character").value = kind;
+
+    localStorage.setItem("cafe_character", kind);
 }
 
-setCharacter(character);
+changeCharacter(selectedCharacter);
 
 player.position.set(0, 0, 4);
 
-
-// ================================================
+// ============================================
 // 게임 데이터
-// ================================================
+// ============================================
 
-let state;
-
-function initial() {
+function newGame() {
     return {
         coins: 150,
         level: 1,
         xp: 0,
-        bought: [],
-        served: 0
+        served: 0,
+        furniture: []
     };
 }
 
+let state;
+
 try {
-    state =
-        JSON.parse(localStorage.getItem('cozy_cafe_save'))
-        || initial();
+    state = JSON.parse(
+        localStorage.getItem("rilakkuma_cafe_save")
+    ) || newGame();
 } catch {
-    state = initial();
+    state = newGame();
 }
 
 if (
     !Number.isFinite(state.coins) ||
-    !Array.isArray(state.bought)
+    !Array.isArray(state.furniture)
 ) {
-    state = initial();
+    state = newGame();
 }
 
-const save = () =>
+function saveGame() {
     localStorage.setItem(
-        'cozy_cafe_save',
+        "rilakkuma_cafe_save",
         JSON.stringify(state)
     );
-
-function ui() {
-
-    $('coins').textContent = '🪙 ' + state.coins;
-
-    $('level').textContent = '⭐ Lv.' + state.level;
-
-    $('owned').textContent =
-        '구매한 가구: ' + state.bought.length + '개';
-
-    $('orders').textContent =
-        guests.filter(x => x.ready).length;
 }
 
+let noticeTimer;
 
-// ================================================
-// 알림 메시지
-// ================================================
+function notify(message) {
 
-let timer;
+    $("message").textContent = message;
+    $("message").style.opacity = 1;
 
-function notify(t) {
+    clearTimeout(noticeTimer);
 
-    $('notice').textContent = t;
-    $('notice').style.opacity = 1;
-
-    clearTimeout(timer);
-
-    timer = setTimeout(
-        () => $('notice').style.opacity = 0,
-        2300
-    );
+    noticeTimer = setTimeout(() => {
+        $("message").style.opacity = 0;
+    }, 2400);
 }
 
+function updateUI() {
 
-// ================================================
-// 손님 NPC
-// ================================================
+    $("coins").textContent = "🪙 " + state.coins;
+    $("level").textContent = "⭐ Lv." + state.level;
+    $("served").textContent = state.served;
+    $("furniture").textContent = state.furniture.length;
+
+    $("orders").textContent =
+        guests.filter(g => g.ready).length;
+}
+
+// ============================================
+// 손님
+// ============================================
 
 const guests = [];
 
-function addGuest(i) {
+function createGuest(i) {
 
-    const g = new THREE.Group();
+    const kinds = [
+        "brown",
+        "little",
+        "bird",
+        "white"
+    ];
 
-    g.add(
-        bear(
-            ['brown', 'white', 'little', 'bird'][i % 4]
-        )
-    );
+    const model = createCharacter(kinds[i % kinds.length]);
 
-    g.position.set(-7 + i * 1.5, 0, -3.8);
+    model.position.set(-5 + i * 3.5, 0, -2.8);
 
-    scene.add(g);
+    scene.add(model);
 
     guests.push({
-        group: g,
+        model,
         ready: true,
-        t: Math.random() * 10,
-        goal: new THREE.Vector3(-4 + i * 2, 0, -2)
+        timer: 0,
+        phase: Math.random() * 10
     });
 }
 
 for (let i = 0; i < 3; i++) {
-    addGuest(i);
+    createGuest(i);
 }
 
-
-// ================================================
+// ============================================
 // 가구 구매
-// ================================================
+// ============================================
 
-const costs = {
+const prices = {
     table: 80,
     plant: 45,
     lamp: 65,
     sofa: 120
 };
 
-let furnitureIndex = 0;
+function installFurniture(type, index) {
 
-function purchase(k) {
+    const x = -6 + (index % 5) * 2.8;
+    const z = 2 + Math.floor(index / 5) * 2.5;
 
-    const cost = costs[k];
+    if (type === "table") makeTable(x, z);
+    if (type === "plant") makePlant(x, z);
+    if (type === "lamp") makeLamp(x, z);
+    if (type === "sofa") makeSofa(x, z);
+}
 
-    if (state.coins < cost) {
-        notify('🪙 돈이 부족해요! 주문을 서빙해 보세요.');
+state.furniture.forEach((type, index) => {
+    installFurniture(type, index);
+});
+
+function buyFurniture(type) {
+
+    const price = prices[type];
+
+    if (state.coins < price) {
+        notify("🪙 코인이 부족해요!");
         return;
     }
 
-    state.coins -= cost;
-    state.bought.push(k);
+    state.coins -= price;
 
-    install(k, furnitureIndex++);
+    const index = state.furniture.length;
 
-    save();
-    ui();
+    state.furniture.push(type);
 
-    notify('✨ 새 가구를 설치했어요!');
+    installFurniture(type, index);
+
+    saveGame();
+    updateUI();
+
+    notify("✨ 새로운 가구를 구매했어요!");
 }
 
-function install(k, i) {
-
-    const x = -6 + (i % 5) * 2.8;
-    const z = 2 + Math.floor(i / 5) * 2.5;
-
-    if (k === 'table') makeTable(x, z);
-    if (k === 'plant') makePlant(x, z);
-    if (k === 'lamp') makeLamp(x, z);
-    if (k === 'sofa') makeSofa(x, z);
-}
-
-state.bought.forEach(
-    (k, i) => install(k, i)
-);
-
-furnitureIndex = state.bought.length;
-
-
-// ================================================
+// ============================================
 // 디저트 서빙
-// ================================================
+// ============================================
 
-function serve() {
+function serveDessert() {
 
-    const close = guests
-        .filter(
-            g =>
-                g.ready &&
-                g.group.position.distanceTo(player.position) < 3.5
-        )
-        .sort(
-            (a, b) =>
-                a.group.position.distanceTo(player.position) -
-                b.group.position.distanceTo(player.position)
-        );
+    const nearby = guests
+        .filter(g => g.ready)
+        .map(g => ({
+            guest: g,
+            distance: g.model.position.distanceTo(player.position)
+        }))
+        .filter(g => g.distance < 3.5)
+        .sort((a, b) => a.distance - b.distance);
 
-    if (!close.length) {
-
-        notify('🍰 주문 중인 손님에게 가까이 가세요!');
+    if (nearby.length === 0) {
+        notify("🍰 주문 중인 손님에게 가까이 가세요!");
         return;
     }
 
-    const g = close[0];
+    const guest = nearby[0].guest;
 
-    g.ready = false;
-    g.t = 0;
+    guest.ready = false;
+    guest.timer = 0;
 
     state.coins += 35;
     state.xp += 1;
     state.served += 1;
 
     if (state.xp >= 5) {
-
         state.xp = 0;
-        state.level++;
-
-        notify('🎉 레벨 업! Lv.' + state.level);
-
+        state.level += 1;
+        notify("🎉 레벨 업! Lv." + state.level);
     } else {
-
-        notify('🍮 서빙 완료! +35 코인');
+        notify("🍮 디저트 판매 완료! +35코인");
     }
 
-    save();
-    ui();
+    saveGame();
+    updateUI();
 }
 
+// ============================================
+// 버튼
+// ============================================
 
-// ================================================
-// 버튼 이벤트
-// ================================================
+document.querySelectorAll("[data-buy]").forEach(button => {
 
-$('serve').onclick = serve;
+    button.addEventListener("click", () => {
+        buyFurniture(button.dataset.buy);
+    });
+});
 
-$('save').onclick = () => {
-    save();
-    notify('💾 저장했어요!');
+$("serve").onclick = serveDessert;
+
+$("save").onclick = () => {
+    saveGame();
+    notify("💾 게임이 저장되었어요!");
 };
 
-document.querySelectorAll('[data-buy]').forEach(
-    b => b.onclick = () => purchase(b.dataset.buy)
-);
-
-$('character').onchange = e => {
-
-    setCharacter(e.target.value);
-
-    notify('🐻 캐릭터를 변경했어요!');
+$("character").onchange = event => {
+    changeCharacter(event.target.value);
+    notify("🐻 캐릭터를 변경했어요!");
 };
 
-$('reset').onclick = () => {
+$("reset").onclick = () => {
 
-    if (confirm('저장된 카페를 초기화할까요?')) {
+    if (confirm("카페를 처음부터 다시 시작할까요?")) {
 
-        localStorage.removeItem('cozy_cafe_save');
-
+        localStorage.removeItem("rilakkuma_cafe_save");
         location.reload();
     }
 };
 
-
-// ================================================
+// ============================================
 // 카메라
-// ================================================
+// ============================================
 
 let firstPerson = false;
-
 let yaw = 0;
-let pitch = .26;
+let pitch = .25;
 
-let drag = false;
+$("view").onclick = toggleView;
 
-let lastX = 0;
-let lastY = 0;
-
-let emote = 0;
-
-function toggleCamera() {
+function toggleView() {
 
     firstPerson = !firstPerson;
 
-    $('camera').textContent = firstPerson
-        ? '1인칭 → 3인칭'
-        : '3인칭 → 1인칭';
+    $("view").textContent =
+        firstPerson ? "1인칭" : "3인칭";
 }
 
-$('camera').onclick = toggleCamera;
+// ============================================
+// 키보드
+// ============================================
 
-$('wave').onclick = () => {
+const keys = Object.create(null);
 
-    emote = 1.5;
+function isTyping(element) {
 
-    notify('👋 안녕!');
-};
+    if (!element) return false;
 
-$('dance').onclick = () => {
-
-    emote = 3;
-
-    notify('🎵 신나는 댄스!');
-};
-
-
-// ================================================
-// 키보드 이동 시스템
-// ================================================
-
-const keys = {};
-
-function focusGame() {
-    renderer.domElement.focus();
+    return (
+        ["INPUT", "SELECT", "TEXTAREA"].includes(element.tagName) ||
+        element.isContentEditable
+    );
 }
 
-renderer.domElement.tabIndex = 0;
-renderer.domElement.style.outline = "none";
+window.addEventListener("keydown", event => {
 
-renderer.domElement.addEventListener(
-    "pointerdown",
-    focusGame
-);
-
-window.addEventListener("keydown", (event) => {
+    if (isTyping(event.target)) return;
 
     const key = event.key.toLowerCase();
 
-    if (
-        event.target.tagName === "INPUT" ||
-        event.target.tagName === "SELECT" ||
-        event.target.tagName === "TEXTAREA"
-    ) {
-        return;
-    }
-
-    const controlledKeys = [
+    if ([
         "w", "a", "s", "d",
         "arrowup", "arrowdown",
         "arrowleft", "arrowright",
         "shift", "v", "e"
-    ];
-
-    if (controlledKeys.includes(key)) {
+    ].includes(key)) {
         event.preventDefault();
     }
 
@@ -1424,97 +1176,125 @@ window.addEventListener("keydown", (event) => {
 
     if (event.repeat) return;
 
-    if (key === "v") {
-        toggleCamera();
-    }
+    if (key === "v") toggleView();
+    if (key === "e") serveDessert();
 
-    if (key === "e") {
-        serve();
-    }
+}, { passive: false });
 
-});
-
-window.addEventListener("keyup", (event) => {
+window.addEventListener("keyup", event => {
     keys[event.key.toLowerCase()] = false;
 });
 
 window.addEventListener("blur", () => {
-    Object.keys(keys).forEach(key => {
-        keys[key] = false;
-    });
+    Object.keys(keys).forEach(key => keys[key] = false);
 });
 
-setTimeout(focusGame, 600);
+// ============================================
+// 마우스
+// ============================================
 
-// ================================================
-// 마우스 시점 조절
-// ================================================
+let dragging = false;
+let previousX = 0;
+let previousY = 0;
 
-renderer.domElement.addEventListener(
-    'pointerdown',
-    e => {
+renderer.domElement.addEventListener("pointerdown", event => {
 
-        drag = true;
+    dragging = true;
 
-        lastX = e.clientX;
-        lastY = e.clientY;
+    previousX = event.clientX;
+    previousY = event.clientY;
 
-        renderer.domElement.setPointerCapture(e.pointerId);
-    }
-);
+    renderer.domElement.focus();
 
-renderer.domElement.addEventListener(
-    'pointerup',
-    () => drag = false
-);
-
-renderer.domElement.addEventListener(
-    'pointermove',
-    e => {
-
-        if (!drag) return;
-
-        yaw -= (e.clientX - lastX) * .005;
-
-        pitch = THREE.MathUtils.clamp(
-            pitch + (e.clientY - lastY) * .004,
-            -.25,
-            1.1
-        );
-
-        lastX = e.clientX;
-        lastY = e.clientY;
-    }
-);
-
-
-// ================================================
-// 모바일 이동 버튼
-// ================================================
-
-document.querySelectorAll('[data-dir]').forEach(b => {
-
-    b.onpointerdown = e => {
-
-        e.preventDefault();
-
-        keys[b.dataset.dir] = true;
-    };
-
-    b.onpointerup = b.onpointercancel = () => {
-        keys[b.dataset.dir] = false;
-    };
+    renderer.domElement.setPointerCapture(event.pointerId);
 });
 
+renderer.domElement.addEventListener("pointerup", () => {
+    dragging = false;
+});
 
-// ================================================
-// 게임 애니메이션
-// ================================================
+renderer.domElement.addEventListener("pointercancel", () => {
+    dragging = false;
+});
+
+renderer.domElement.addEventListener("pointermove", event => {
+
+    if (!dragging) return;
+
+    yaw -= (event.clientX - previousX) * .005;
+
+    pitch = THREE.MathUtils.clamp(
+        pitch + (event.clientY - previousY) * .004,
+        -.2,
+        1.1
+    );
+
+    previousX = event.clientX;
+    previousY = event.clientY;
+});
+
+// ============================================
+// 감정 표현
+// ============================================
+
+let emotion = "";
+let emotionTime = 0;
+
+$("wave").onclick = () => {
+    emotion = "wave";
+    emotionTime = 2;
+    notify("👋 안녕!");
+};
+
+$("dance").onclick = () => {
+    emotion = "dance";
+    emotionTime = 3;
+    notify("🎵 춤추는 중!");
+};
+
+// ============================================
+// 애니메이션
+// ============================================
 
 const clock = new THREE.Clock();
 
-const target = new THREE.Vector3();
-const wanted = new THREE.Vector3();
+const cameraTarget = new THREE.Vector3();
+const cameraWanted = new THREE.Vector3();
+
+function animateCharacter(character, time, moving, running) {
+
+    if (!character || !character.userData.parts) return;
+
+    const parts = character.userData.parts;
+    const model = character.userData.model;
+
+    const speed = running ? 15 : 10;
+    const amount = moving ? (running ? .75 : .48) : 0;
+
+    if (parts.leftArm) {
+        parts.leftArm.rotation.x =
+            Math.sin(time * speed) * amount;
+    }
+
+    if (parts.rightArm) {
+        parts.rightArm.rotation.x =
+            -Math.sin(time * speed) * amount;
+    }
+
+    if (parts.leftLeg) {
+        parts.leftLeg.rotation.x =
+            -Math.sin(time * speed) * amount;
+    }
+
+    if (parts.rightLeg) {
+        parts.rightLeg.rotation.x =
+            Math.sin(time * speed) * amount;
+    }
+
+    model.position.y = moving
+        ? Math.abs(Math.sin(time * speed)) * .045
+        : Math.sin(time * 2) * .012;
+}
 
 function animate() {
 
@@ -1523,32 +1303,34 @@ function animate() {
     const dt = Math.min(clock.getDelta(), .05);
     const time = clock.elapsedTime;
 
-const f =
-    Number(Boolean(keys.w || keys.arrowup)) -
-    Number(Boolean(keys.s || keys.arrowdown));
+    const forward =
+        Number(Boolean(keys.w || keys.arrowup)) -
+        Number(Boolean(keys.s || keys.arrowdown));
 
-const r =
-    Number(Boolean(keys.d || keys.arrowright)) -
-    Number(Boolean(keys.a || keys.arrowleft));
+    const sideways =
+        Number(Boolean(keys.d || keys.arrowright)) -
+        Number(Boolean(keys.a || keys.arrowleft));
 
-    const speed = keys.shift ? 5.4 : 3.1;
+    const running = Boolean(keys.shift);
 
-    const dir = new THREE.Vector3(
-        Math.sin(yaw) * f + Math.cos(yaw) * r,
+    const speed = running ? 5.5 : 3.2;
+
+    const direction = new THREE.Vector3(
+        Math.sin(yaw) * forward + Math.cos(yaw) * sideways,
         0,
-        -Math.cos(yaw) * f + Math.sin(yaw) * r
+        -Math.cos(yaw) * forward + Math.sin(yaw) * sideways
     );
 
-    if (dir.lengthSq()) {
+    const moving = direction.lengthSq() > 0;
 
-        dir.normalize();
+    if (moving) {
+
+        direction.normalize();
 
         player.position.addScaledVector(
-            dir,
+            direction,
             dt * speed
         );
-
-        player.rotation.y = Math.atan2(dir.x, dir.z);
 
         player.position.x = THREE.MathUtils.clamp(
             player.position.x,
@@ -1561,52 +1343,82 @@ const r =
             -8.1,
             8.1
         );
+
+        const targetRotation = Math.atan2(
+            direction.x,
+            direction.z
+        );
+
+        const difference = Math.atan2(
+            Math.sin(targetRotation - player.rotation.y),
+            Math.cos(targetRotation - player.rotation.y)
+        );
+
+        player.rotation.y +=
+            difference * Math.min(1, dt * 12);
     }
 
-    player.children[0].position.y = dir.lengthSq()
-        ? Math.abs(Math.sin(time * 11)) * .045
-        : Math.sin(time * 2) * .015;
+    animateCharacter(
+        characterModel,
+        time,
+        moving,
+        running
+    );
 
-    if (emote > 0) {
+    // 손 흔들기 / 춤
+    if (emotionTime > 0) {
 
-        emote -= dt;
+        emotionTime -= dt;
 
-        player.children[0].rotation.z =
-            Math.sin(time * 14) * .18;
+        const parts = characterModel.userData.parts;
+
+        if (emotion === "wave" && parts.rightArm) {
+            parts.rightArm.rotation.z = -2.1;
+            parts.rightArm.rotation.x =
+                Math.sin(time * 15) * .4;
+        }
+
+        if (emotion === "dance") {
+            characterModel.userData.model.rotation.z =
+                Math.sin(time * 9) * .2;
+        }
 
     } else {
 
-        player.children[0].rotation.z = 0;
+        characterModel.userData.model.rotation.z = 0;
+
+        if (characterModel.userData.parts.rightArm) {
+            characterModel.userData.parts.rightArm.rotation.z = 0;
+        }
     }
-
-    player.children[0].visible = !firstPerson;
-
 
     // 손님 애니메이션
-    for (const g of guests) {
+    guests.forEach((guest, index) => {
 
-        g.t += dt;
+        guest.timer += dt;
 
-        if (!g.ready && g.t > 7) {
-
-            g.ready = true;
-            g.t = 0;
+        if (!guest.ready && guest.timer > 7) {
+            guest.ready = true;
+            guest.timer = 0;
+            updateUI();
         }
 
-        g.group.position.y =
-            Math.sin(time * 2 + g.t) * .02;
+        animateCharacter(
+            guest.model,
+            time + guest.phase,
+            false,
+            false
+        );
 
-        g.group.rotation.y =
-            Math.sin(time * .6 + g.t) * .25;
-    }
+        guest.model.rotation.y =
+            Math.sin(time * .6 + index) * .2;
+    });
 
+    // 카메라
+    cameraTarget.copy(player.position);
+    cameraTarget.y += 1.45;
 
-    // 카메라 위치
-    target.copy(player.position).add(
-        new THREE.Vector3(0, 1.4, 0)
-    );
-
-    const horizontal = new THREE.Vector3(
+    const facing = new THREE.Vector3(
         Math.sin(yaw),
         0,
         -Math.cos(yaw)
@@ -1614,72 +1426,77 @@ const r =
 
     if (firstPerson) {
 
-        wanted.copy(target);
+        characterModel.visible = false;
 
-        camera.position.lerp(wanted, .23);
+        cameraWanted.copy(cameraTarget);
 
-        camera.lookAt(
-            target.clone()
-                .add(horizontal.multiplyScalar(4))
-                .add(
-                    new THREE.Vector3(
-                        0,
-                        -Math.tan(pitch) * 3,
-                        0
-                    )
-                )
-        );
+        camera.position.lerp(cameraWanted, .25);
+
+        const look = cameraTarget.clone()
+            .addScaledVector(facing, 4);
+
+        look.y -= Math.tan(pitch) * 3;
+
+        camera.lookAt(look);
 
     } else {
 
-        wanted.copy(target)
+        characterModel.visible = true;
+
+        cameraWanted.copy(cameraTarget)
             .addScaledVector(
-                horizontal,
+                facing,
                 -5 * Math.cos(pitch)
-            )
-            .add(
-                new THREE.Vector3(
-                    0,
-                    2 + 5 * Math.sin(pitch),
-                    0
-                )
             );
 
-        camera.position.lerp(wanted, .13);
+        cameraWanted.y +=
+            2 + 5 * Math.sin(pitch);
 
-        camera.lookAt(target);
+        camera.position.lerp(cameraWanted, .14);
+
+        camera.lookAt(cameraTarget);
     }
 
     renderer.render(scene, camera);
 }
 
+// ============================================
+// 창 크기 변경
+// ============================================
 
-// ================================================
-// 화면 크기 변경
-// ================================================
+window.addEventListener("resize", () => {
 
-addEventListener('resize', () => {
-
-    camera.aspect = innerWidth / innerHeight;
+    camera.aspect =
+        window.innerWidth / window.innerHeight;
 
     camera.updateProjectionMatrix();
 
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
 });
 
-ui();
+// ============================================
+// 시작
+// ============================================
 
-$('loading').remove();
+updateUI();
 
-notify('🐻 WASD로 움직여 손님에게 디저트를 서빙하세요!');
+$("loading").remove();
+
+notify("🐻 카페에 오신 것을 환영해요!");
+
+setTimeout(() => {
+    renderer.domElement.focus();
+}, 500);
 
 animate();
 
 </script>
-
 </body>
 </html>
-'''
+"""
 
 components.html(
     html,
