@@ -349,8 +349,28 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 const renderer = new THREE.WebGLRenderer({
-    antialias: true
+    antialias: true,
+    powerPreference: "high-performance"
 });
+
+// 키보드 입력을 받을 수 있도록 설정
+renderer.domElement.tabIndex = 0;
+renderer.domElement.style.outline = "none";
+renderer.domElement.style.touchAction = "none";
+
+// 3D 화면 클릭 시 키보드 포커스
+renderer.domElement.addEventListener("pointerdown", () => {
+    renderer.domElement.focus();
+});
+
+// 페이지에 포커스가 들어오면 게임 화면 활성화
+window.addEventListener("focus", () => {
+    renderer.domElement.focus();
+});
+
+setTimeout(() => {
+    renderer.domElement.focus();
+}, 700);
 
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
@@ -635,90 +655,416 @@ const palettes = {
 
 
 // ================================================
-// 3D 캐릭터 생성
+// 고퀄리티 3D 캐릭터 생성
 // ================================================
 
-function bear(kind = 'white') {
+function bear(kind = "white") {
 
-    const p = palettes[kind];
+    const group = new THREE.Group();
 
-    const g = new THREE.Group();
+    const colorSets = {
 
-    const body = mat(p.body);
-    const ear = mat(p.ear);
-    const dark = mat(0x382e2a);
-    const nose = mat(0x5d4139);
+        white: {
+            fur: 0xfff8ee,
+            ear: 0xf3b2bd,
+            muzzle: 0xffffff,
+            belly: 0xffffff,
+            nose: 0x503b32
+        },
 
-    // 병아리 캐릭터
-    if (kind === 'bird') {
+        brown: {
+            fur: 0xb77e4c,
+            ear: 0xe9c47d,
+            muzzle: 0xfff4dd,
+            belly: 0xffeed1,
+            nose: 0x503b32
+        },
 
-        sphere(
-            g, .53, 0, 1.02, 0,
-            body, 1, 1.05, .82
-        );
+        little: {
+            fur: 0xc79664,
+            ear: 0xe7bd89,
+            muzzle: 0xffeedb,
+            belly: 0xffead1,
+            nose: 0x503b32
+        },
 
-        sphere(g, .14, -.22, 1.16, .43, dark, .6, .75, .3);
-        sphere(g, .14, .22, 1.16, .43, dark, .6, .75, .3);
+        bird: {
+            fur: 0xffd84c,
+            ear: 0xffb84d,
+            muzzle: 0xffb84d,
+            belly: 0xffe47d,
+            nose: 0x503b32
+        }
 
-        box(
-            g, .3, .16, .25,
-            0, .97, .52,
-            mat(0xf19a3e)
-        );
+    };
 
-        sphere(g, .18, -.53, .9, 0, body);
-        sphere(g, .18, .53, .9, 0, body);
+    const colors = colorSets[kind] || colorSets.white;
 
-        sphere(g, .22, -.24, .3, .1, body);
-        sphere(g, .22, .24, .3, .1, body);
+    function material(hex, roughness = 0.78) {
 
-        return g;
+        return new THREE.MeshStandardMaterial({
+            color: hex,
+            roughness: roughness,
+            metalness: 0
+        });
     }
 
-    // 몸
-    sphere(g, .47, 0, .7, 0, body, .9, 1.05, .75);
+    const fur = material(colors.fur);
+    const ear = material(colors.ear);
+    const muzzle = material(colors.muzzle);
+    const belly = material(colors.belly);
+
+    const eye = material(0x211b19, 0.18);
+    const nose = material(colors.nose, 0.35);
+    const shine = material(0xffffff, 0.1);
+    const blush = material(0xf5b4b7);
+
+    function oval(
+        x, y, z,
+        sx, sy, sz,
+        mat
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(
+                1,
+                48,
+                32
+            ),
+            mat
+        );
+
+        mesh.position.set(x, y, z);
+        mesh.scale.set(sx, sy, sz);
+
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        group.add(mesh);
+
+        return mesh;
+    }
+
+    function curvedLine(points, radius, mat) {
+
+        const curve = new THREE.CatmullRomCurve3(
+            points.map(p => new THREE.Vector3(...p))
+        );
+
+        const mesh = new THREE.Mesh(
+            new THREE.TubeGeometry(
+                curve,
+                20,
+                radius,
+                8,
+                false
+            ),
+            mat
+        );
+
+        group.add(mesh);
+
+        return mesh;
+    }
+
+    // ============================================
+    // 키이로이토리
+    // ============================================
+
+    if (kind === "bird") {
+
+        oval(
+            0, 1.02, 0,
+            .55, .62, .49,
+            fur
+        );
+
+        // 볼
+        oval(
+            -.35, .97, .29,
+            .23, .23, .17,
+            fur
+        );
+
+        oval(
+            .35, .97, .29,
+            .23, .23, .17,
+            fur
+        );
+
+        // 눈
+        oval(
+            -.21, 1.18, .46,
+            .055, .075, .035,
+            eye
+        );
+
+        oval(
+            .21, 1.18, .46,
+            .055, .075, .035,
+            eye
+        );
+
+        // 눈 하이라이트
+        oval(
+            -.23, 1.21, .49,
+            .015, .018, .01,
+            shine
+        );
+
+        oval(
+            .19, 1.21, .49,
+            .015, .018, .01,
+            shine
+        );
+
+        // 부리
+        oval(
+            0, .98, .52,
+            .17, .095, .16,
+            ear
+        );
+
+        // 날개
+        oval(
+            -.53, .91, 0,
+            .18, .28, .23,
+            fur
+        );
+
+        oval(
+            .53, .91, 0,
+            .18, .28, .23,
+            fur
+        );
+
+        // 발
+        oval(
+            -.23, .35, .20,
+            .22, .09, .23,
+            ear
+        );
+
+        oval(
+            .23, .35, .20,
+            .22, .09, .23,
+            ear
+        );
+
+        // 머리 위 깃털
+        oval(
+            0, 1.62, 0,
+            .09, .17, .09,
+            fur
+        );
+
+        return group;
+    }
+
+    // ============================================
+    // 리락쿠마 / 코리락쿠마
+    // ============================================
+
+    // 몸통
+    oval(
+        0, .72, 0,
+        .47, .55, .39,
+        fur
+    );
+
+    // 배
+    oval(
+        0, .71, .34,
+        .33, .39, .12,
+        belly
+    );
 
     // 머리
-    sphere(g, .52, 0, 1.47, 0, body, 1, .94, .84);
+    oval(
+        0, 1.51, 0,
+        .65, .54, .49,
+        fur
+    );
+
+    // 볼의 볼륨
+    oval(
+        -.43, 1.34, .15,
+        .24, .22, .27,
+        fur
+    );
+
+    oval(
+        .43, 1.34, .15,
+        .24, .22, .27,
+        fur
+    );
 
     // 귀
-    sphere(g, .19, -.38, 1.91, 0, body);
-    sphere(g, .19, .38, 1.91, 0, body);
+    oval(
+        -.48, 1.96, 0,
+        .23, .23, .17,
+        fur
+    );
+
+    oval(
+        .48, 1.96, 0,
+        .23, .23, .17,
+        fur
+    );
 
     // 귀 안쪽
-    sphere(g, .105, -.38, 1.92, .09, ear);
-    sphere(g, .105, .38, 1.92, .09, ear);
+    oval(
+        -.48, 1.97, .145,
+        .145, .145, .045,
+        ear
+    );
+
+    oval(
+        .48, 1.97, .145,
+        .145, .145, .045,
+        ear
+    );
 
     // 눈
-    sphere(g, .055, -.2, 1.52, .45, dark);
-    sphere(g, .055, .2, 1.52, .45, dark);
+    oval(
+        -.23, 1.53, .465,
+        .065, .078, .035,
+        eye
+    );
 
-    // 입 주변
-    sphere(
-        g, .22, 0, 1.3, .43,
-        mat(0xfff7e9),
-        1, .75, .45
+    oval(
+        .23, 1.53, .465,
+        .065, .078, .035,
+        eye
+    );
+
+    // 눈 반짝임
+    oval(
+        -.25, 1.565, .495,
+        .017, .019, .012,
+        shine
+    );
+
+    oval(
+        .21, 1.565, .495,
+        .017, .019, .012,
+        shine
+    );
+
+    // 입 주변 흰색 부분
+    oval(
+        0, 1.29, .47,
+        .25, .17, .15,
+        muzzle
     );
 
     // 코
-    sphere(g, .055, 0, 1.37, .64, nose);
-
-    // 팔
-    sphere(g, .16, -.48, .74, 0, body);
-    sphere(g, .16, .48, .74, 0, body);
-
-    // 다리
-    sphere(g, .24, -.24, .18, .05, body);
-    sphere(g, .24, .24, .18, .05, body);
-
-    // 배
-    sphere(
-        g, .27, 0, .73, .35,
-        mat(0xfff4df),
-        .85, 1, .3
+    oval(
+        0, 1.355, .615,
+        .078, .052, .035,
+        nose
     );
 
-    return g;
+    // 코에서 입까지 이어지는 선
+    curvedLine(
+        [
+            [0, 1.32, .62],
+            [0, 1.275, .625],
+            [0, 1.245, .615]
+        ],
+        .012,
+        nose
+    );
+
+    // 왼쪽 입
+    curvedLine(
+        [
+            [0, 1.245, .615],
+            [-.045, 1.22, .615],
+            [-.09, 1.245, .59]
+        ],
+        .012,
+        nose
+    );
+
+    // 오른쪽 입
+    curvedLine(
+        [
+            [0, 1.245, .615],
+            [.045, 1.22, .615],
+            [.09, 1.245, .59]
+        ],
+        .012,
+        nose
+    );
+
+    // 코리락쿠마 볼
+    if (kind === "white") {
+
+        oval(
+            -.42, 1.34, .425,
+            .11, .055, .015,
+            blush
+        );
+
+        oval(
+            .42, 1.34, .425,
+            .11, .055, .015,
+            blush
+        );
+    }
+
+    // 팔
+    const leftArm = oval(
+        -.50, .78, .04,
+        .18, .28, .20,
+        fur
+    );
+
+    leftArm.rotation.z = -.18;
+
+    const rightArm = oval(
+        .50, .78, .04,
+        .18, .28, .20,
+        fur
+    );
+
+    rightArm.rotation.z = .18;
+
+    // 다리
+    oval(
+        -.25, .22, .14,
+        .27, .20, .29,
+        fur
+    );
+
+    oval(
+        .25, .22, .14,
+        .27, .20, .29,
+        fur
+    );
+
+    // 발바닥
+    oval(
+        -.25, .20, .405,
+        .14, .09, .018,
+        ear
+    );
+
+    oval(
+        .25, .20, .405,
+        .14, .09, .018,
+        ear
+    );
+
+    // 꼬리
+    oval(
+        0, .47, -.39,
+        .16, .16, .14,
+        fur
+    );
+
+    return group;
 }
 
 
@@ -1034,47 +1380,71 @@ $('dance').onclick = () => {
 
 
 // ================================================
-// 키보드 조작
+// 키보드 이동 시스템
 // ================================================
 
 const keys = {};
 
-addEventListener('keydown', e => {
+function focusGame() {
+    renderer.domElement.focus();
+}
+
+renderer.domElement.tabIndex = 0;
+renderer.domElement.style.outline = "none";
+
+renderer.domElement.addEventListener(
+    "pointerdown",
+    focusGame
+);
+
+window.addEventListener("keydown", (event) => {
+
+    const key = event.key.toLowerCase();
 
     if (
-        [
-            'w', 'a', 's', 'd',
-            'shift', 'v', 'e',
-            'arrowup', 'arrowdown',
-            'arrowleft', 'arrowright'
-        ].includes(e.key.toLowerCase())
+        event.target.tagName === "INPUT" ||
+        event.target.tagName === "SELECT" ||
+        event.target.tagName === "TEXTAREA"
     ) {
-        e.preventDefault();
+        return;
     }
 
-    if (e.target.tagName === 'SELECT') return;
+    const controlledKeys = [
+        "w", "a", "s", "d",
+        "arrowup", "arrowdown",
+        "arrowleft", "arrowright",
+        "shift", "v", "e"
+    ];
 
-    keys[e.key.toLowerCase()] = true;
+    if (controlledKeys.includes(key)) {
+        event.preventDefault();
+    }
 
-    if (e.repeat) return;
+    keys[key] = true;
 
-    if (e.key.toLowerCase() === 'v') {
+    if (event.repeat) return;
+
+    if (key === "v") {
         toggleCamera();
     }
 
-    if (e.key.toLowerCase() === 'e') {
+    if (key === "e") {
         serve();
     }
+
 });
 
-addEventListener('keyup', e => {
-    keys[e.key.toLowerCase()] = false;
+window.addEventListener("keyup", (event) => {
+    keys[event.key.toLowerCase()] = false;
 });
 
-addEventListener('blur', () => {
-    Object.keys(keys).forEach(k => keys[k] = false);
+window.addEventListener("blur", () => {
+    Object.keys(keys).forEach(key => {
+        keys[key] = false;
+    });
 });
 
+setTimeout(focusGame, 600);
 
 // ================================================
 // 마우스 시점 조절
@@ -1153,8 +1523,13 @@ function animate() {
     const dt = Math.min(clock.getDelta(), .05);
     const time = clock.elapsedTime;
 
-    const f = Number(!!keys.w) - Number(!!keys.s);
-    const r = Number(!!keys.d) - Number(!!keys.a);
+const f =
+    Number(Boolean(keys.w || keys.arrowup)) -
+    Number(Boolean(keys.s || keys.arrowdown));
+
+const r =
+    Number(Boolean(keys.d || keys.arrowright)) -
+    Number(Boolean(keys.a || keys.arrowleft));
 
     const speed = keys.shift ? 5.4 : 3.1;
 
