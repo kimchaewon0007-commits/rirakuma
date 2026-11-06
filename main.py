@@ -703,42 +703,213 @@ function createCharacter(kind = "white") {
         return mesh;
     }
 
-    if (kind === "bird") {
+// ============================================
+// 키이로이토리 - 실제 캐릭터 비율 개선
+// ============================================
 
-        oval(model, 0, 1.0, 0, .54, .62, .48, fur);
+if (kind === "bird") {
 
-        oval(model, -.21, 1.17, .46, .055, .07, .035, eye);
-        oval(model, .21, 1.17, .46, .055, .07, .035, eye);
+    // 재질
+    const birdYellow = material(0xffdf37, 0.92);
+    const birdOrange = material(0xf49a35, 0.78);
+    const birdBlack = material(0x211b19, 0.75);
 
-        oval(model, 0, .98, .52, .17, .09, .14, ear);
+    // ========================================
+    // 몸통 - 머리와 몸이 하나인 둥근 형태
+    // ========================================
 
-        parts.leftArm = new THREE.Group();
-        parts.rightArm = new THREE.Group();
+    oval(
+        model,
+        0, 0.96, 0,
+        0.61, 0.65, 0.51,
+        birdYellow
+    );
 
-        parts.leftArm.position.set(-.48, .95, 0);
-        parts.rightArm.position.set(.48, .95, 0);
+    // 아래쪽 배를 조금 통통하게
+    oval(
+        model,
+        0, 0.71, 0.02,
+        0.52, 0.36, 0.47,
+        birdYellow
+    );
 
-        oval(parts.leftArm, -.08, -.07, 0, .18, .27, .22, fur);
-        oval(parts.rightArm, .08, -.07, 0, .18, .27, .22, fur);
+    // ========================================
+    // 눈 - 검고 둥근 눈
+    // ========================================
 
-        model.add(parts.leftArm, parts.rightArm);
+    oval(
+        model,
+        -0.23, 1.10, 0.478,
+        0.064, 0.071, 0.025,
+        birdBlack
+    );
 
-        parts.leftLeg = new THREE.Group();
-        parts.rightLeg = new THREE.Group();
+    oval(
+        model,
+        0.23, 1.10, 0.478,
+        0.064, 0.071, 0.025,
+        birdBlack
+    );
 
-        parts.leftLeg.position.set(-.23, .4, .1);
-        parts.rightLeg.position.set(.23, .4, .1);
+    // ========================================
+    // 부리 - 위아래 입체적인 주황색 부리
+    // ========================================
 
-        oval(parts.leftLeg, 0, -.12, .1, .19, .1, .22, ear);
-        oval(parts.rightLeg, 0, -.12, .1, .19, .1, .22, ear);
+    // 윗부리
+    oval(
+        model,
+        0, 0.99, 0.535,
+        0.19, 0.105, 0.12,
+        birdOrange
+    );
 
-        model.add(parts.leftLeg, parts.rightLeg);
+    // 아랫부리
+    oval(
+        model,
+        0, 0.89, 0.535,
+        0.155, 0.075, 0.10,
+        birdOrange
+    );
 
-        oval(model, 0, 1.61, 0, .09, .16, .09, fur);
+    // 부리 가운데 구분선
+    line(
+        model,
+        [
+            [-0.13, 0.925, 0.638],
+            [0, 0.915, 0.650],
+            [0.13, 0.925, 0.638]
+        ],
+        0.008,
+        birdBlack
+    );
 
-        root.userData = { model, parts };
-        return root;
+    // ========================================
+    // 날개 - 몸에 붙은 짧고 둥근 날개
+    // ========================================
+
+    parts.leftArm = new THREE.Group();
+    parts.rightArm = new THREE.Group();
+
+    parts.leftArm.position.set(-0.52, 0.87, 0);
+    parts.rightArm.position.set(0.52, 0.87, 0);
+
+    const leftWing = oval(
+        parts.leftArm,
+        -0.055, -0.07, 0.04,
+        0.17, 0.24, 0.20,
+        birdYellow
+    );
+
+    leftWing.rotation.z = -0.35;
+
+    const rightWing = oval(
+        parts.rightArm,
+        0.055, -0.07, 0.04,
+        0.17, 0.24, 0.20,
+        birdYellow
+    );
+
+    rightWing.rotation.z = 0.35;
+
+    model.add(parts.leftArm, parts.rightArm);
+
+    // ========================================
+    // 발 - 검은색 세 갈래 발
+    // ========================================
+
+    parts.leftLeg = new THREE.Group();
+    parts.rightLeg = new THREE.Group();
+
+    parts.leftLeg.position.set(-0.23, 0.39, 0.10);
+    parts.rightLeg.position.set(0.23, 0.39, 0.10);
+
+    function makeBirdFoot(parent) {
+
+        // 발목
+        line(
+            parent,
+            [
+                [0, 0, 0],
+                [0, -0.14, 0.02]
+            ],
+            0.028,
+            birdBlack
+        );
+
+        // 왼쪽 발가락
+        line(
+            parent,
+            [
+                [0, -0.14, 0.02],
+                [-0.12, -0.19, 0.13]
+            ],
+            0.026,
+            birdBlack
+        );
+
+        // 가운데 발가락
+        line(
+            parent,
+            [
+                [0, -0.14, 0.02],
+                [0, -0.20, 0.17]
+            ],
+            0.026,
+            birdBlack
+        );
+
+        // 오른쪽 발가락
+        line(
+            parent,
+            [
+                [0, -0.14, 0.02],
+                [0.12, -0.19, 0.13]
+            ],
+            0.026,
+            birdBlack
+        );
     }
+
+    makeBirdFoot(parts.leftLeg);
+    makeBirdFoot(parts.rightLeg);
+
+    model.add(parts.leftLeg, parts.rightLeg);
+
+    // ========================================
+    // 머리 위 검은색 V자 깃털
+    // ========================================
+
+    line(
+        model,
+        [
+            [0, 1.59, 0],
+            [-0.11, 1.76, 0.01]
+        ],
+        0.027,
+        birdBlack
+    );
+
+    line(
+        model,
+        [
+            [0, 1.59, 0],
+            [0.11, 1.76, 0.01]
+        ],
+        0.027,
+        birdBlack
+    );
+
+    // ========================================
+    // 애니메이션용 데이터
+    // ========================================
+
+    root.userData = {
+        model,
+        parts
+    };
+
+    return root;
+}
 
 // 몸통 - 다리와 자연스럽게 연결
 oval(
