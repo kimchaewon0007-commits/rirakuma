@@ -740,9 +740,13 @@ function createCharacter(kind = "white") {
         return root;
     }
 
-    // 몸통
-    oval(model, 0, .74, 0, .46, .54, .38, fur);
-
+// 몸통 - 다리와 자연스럽게 연결
+oval(
+    model,
+    0, 0.77, 0,
+    0.46, 0.53, 0.38,
+    fur
+);
     // 배
     oval(model, 0, .72, .34, .31, .37, .105, belly);
 
@@ -912,28 +916,53 @@ if (kind === "white") {
 
     model.add(parts.leftArm, parts.rightArm);
 
-    // 움직이는 다리
-    parts.leftLeg = new THREE.Group();
-    parts.rightLeg = new THREE.Group();
+// ============================================
+// 코리락쿠마 피규어 스타일 다리
+// ============================================
 
-    parts.leftLeg.position.set(-.24, .38, .08);
-    parts.rightLeg.position.set(.24, .38, .08);
+// 움직이는 다리 그룹
+parts.leftLeg = new THREE.Group();
+parts.rightLeg = new THREE.Group();
 
-    oval(
-        parts.leftLeg,
-        0, -.15, .08,
-        .26, .20, .28,
-        fur
-    );
+// 다리 시작 위치
+parts.leftLeg.position.set(-0.225, 0.48, 0.015);
+parts.rightLeg.position.set(0.225, 0.48, 0.015);
 
-    oval(
-        parts.rightLeg,
-        0, -.15, .08,
-        .26, .20, .28,
-        fur
-    );
+// ============================================
+// 왼쪽 다리
+// ============================================
 
-    model.add(parts.leftLeg, parts.rightLeg);
+const leftLeg = oval(
+    parts.leftLeg,
+    0, -0.23, 0.015,
+    0.205, 0.34, 0.205,
+    fur
+);
+
+// 다리가 아래로 내려오는 형태
+leftLeg.rotation.z = -0.035;
+
+// ============================================
+// 오른쪽 다리
+// ============================================
+
+const rightLeg = oval(
+    parts.rightLeg,
+    0, -0.23, 0.015,
+    0.205, 0.34, 0.205,
+    fur
+);
+
+rightLeg.rotation.z = 0.035;
+
+// ============================================
+// 다리 연결
+// ============================================
+
+model.add(
+    parts.leftLeg,
+    parts.rightLeg
+);
 
     // 꼬리
     oval(model, 0, .45, -.38, .15, .15, .14, fur);
